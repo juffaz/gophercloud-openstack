@@ -30,7 +30,7 @@ return
 
 client, err :=
 openstack.NewComputeV2(provider, gophercloud.EndpointOpts{
-Region: "Regionz",
+Region: "DeltaOne",
 })
 if err != nil {
 fmt.Println("NewComputeV2 Error:")
@@ -40,7 +40,7 @@ return
 
 clientblockstorage, err :=
 openstack.NewBlockStorageV2(provider, gophercloud.EndpointOpts{
-Region: "Regionz",
+Region: "DeltaOne",
 })
 if err != nil {
 fmt.Println("NewBlockStorageV2 Error:")
@@ -48,15 +48,24 @@ fmt.Println(err)
 return
 }
 
+
+
 opts2 := servers.ListOpts{}
 opts3 := images.ListOpts{}
 opts4 := volumes.ListOpts{}
-//opts5 := snapshots.ListOpts{}
+opts5 := snapshots.ListOpts{}
+//opts6 := snapshots.CreateOpts{Name: "test1snapikNov1", VolumeID: "dfad5ef0-3786-4c29-8469-cc96916efa36"}
 //opts6 := volumetypes.ListOpts{}
+//opts6 := snapshots.CreateOpts{Name: "2014_oct", VolumeID: "dfad5ef0-3786-4c29-8469-cc96916efa36"}
+
+//snap, err := snapshots.Create(clientblockstorage, opts6).Extract()
+
+
 pager := servers.List(client, opts2)
 pager2 := images.ListDetail(client, opts3)
 pager3 := volumes.List(clientblockstorage, opts4)
-//pager4 := snapshots.List(clientblockstorage, opts5)
+pager4 := snapshots.List(clientblockstorage, opts5)
+//pager4 := snapshots.Create(clientblockstorage, opts6)
 //pager5 := volumetypes.List(clientblockstorage, opts6)
 
 
@@ -112,22 +121,35 @@ return true, nil
 
 
 
-//pager4.EachPage(func(page pagination.Page) (bool, error) {
-//snapList, err := snapshots.ExtractSnapshots(page)
+pager4.EachPage(func(page pagination.Page) (bool, error) {
+snapList, err := snapshots.ExtractSnapshots(page)
 
-//if err !=nil {
-//return false, err
-//}
+if err !=nil {
+return false, err
+}
 
-//for _, snap := range snapList {
+for _, snap := range snapList {
 
-//fmt.Println(snap)
+fmt.Println(snap)
 
-//}
-//fmt.Println("### snap list ###")
+}
+fmt.Println("### snap list ###")
 
-//return true, nil
-//})
+return true, nil
+})
+
+
+//snapnew, err := snapshots.Create{clientblockstorage, opts6}.Extract()
+//if err != nil {
+//		return &snapshots.Snapshot{}, err
+//	}
+	// There's little value in rewrapping these gophercloud types into yet another abstraction/type, instead just
+	// return the gophercloud item
+//return snap, nil
+
+//err := snapshots.Create(clientblockstorage, opts6)
+
+
 
 //pager5.EachPage(func(page pagination.Page) (bool, error) {
 //vtList, err := volumestypes.ExtractVolumeTypes(page)
